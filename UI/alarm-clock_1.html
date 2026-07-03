@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đồng Hồ Báo Thức</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#12151c;
+    --bg-panel:#1a1e28;
+    --bg-panel-raised:#20242f;
+    --amber:#ffb454;
+    --amber-dim:#8a6530;
+    --red-alert:#ff5a5f;
+    --green-set:#5fd39a;
+    --text-primary:#eceef2;
+    --text-muted:#767c8c;
+    --line:#2a2f3d;
+    --font-display:'JetBrains Mono', monospace;
+    --font-body:'Inter', sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse 700px 500px at 20% 0%, #1c2130 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 85% 100%, #1a1e2b 0%, transparent 60%),
+      var(--bg-deep);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--font-body);
+    color:var(--text-primary);
+    padding:24px;
+  }
+
+  .device{
+    width:380px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:32px 28px 28px;
+    box-shadow:
+      0 40px 80px -20px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.03);
+    position:relative;
+  }
+
+  .device::before{
+    content:"";
+    position:absolute;
+    top:14px; left:50%;
+    transform:translateX(-50%);
+    width:44px; height:4px;
+    background:var(--line);
+    border-radius:4px;
+  }
+
+  .eyebrow{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin:14px 0 20px;
+  }
+
+  .eyebrow .label{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    font-weight:600;
+  }
+
+  .status-dot{
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--text-muted);
+    box-shadow:0 0 0 3px transparent;
+    transition:all .3s ease;
+  }
+  .status-dot.armed{
+    background:var(--green-set);
+    box-shadow:0 0 0 3px rgba(95,211,154,0.15);
+  }
+  .status-dot.ringing{
+    background:var(--red-alert);
+    box-shadow:0 0 0 3px rgba(255,90,95,0.2);
+    animation:pulse 1s infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1;}
+    50%{opacity:.4;}
+  }
+
+  .screen{
+    background:#0c0e14;
+    border-radius:14px;
+    padding:26px 20px;
+    text-align:center;
+    border:1px solid #22262f;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .screen::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.012) 0px,
+      rgba(255,255,255,0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events:none;
+  }
+
+  .current-time{
+    font-family:var(--font-display);
+    font-size:2.6rem;
+    font-weight:700;
+    letter-spacing:.03em;
+    color:var(--amber);
+    text-shadow:0 0 18px rgba(255,180,84,0.35);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .current-time.ringing{
+    color:var(--red-alert);
+    text-shadow:0 0 22px rgba(255,90,95,0.5);
+  }
+
+  .date-line{
+    margin-top:6px;
+    font-size:12px;
+    color:var(--text-muted);
+    letter-spacing:.05em;
+    font-family:var(--font-display);
+  }
+
+  .divider{
+    height:1px;
+    background:var(--line);
+    margin:24px 0 22px;
+  }
+
+  .section-label{
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    font-weight:600;
+    margin-bottom:12px;
+  }
+
+  .inputs{
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+  }
+
+  select{
+    flex:1;
+    padding:12px 8px;
+    font-family:var(--font-display);
+    font-size:15px;
+    font-weight:600;
+    text-align:center;
+    background:var(--bg-panel-raised);
+    color:var(--text-primary);
+    border:1px solid var(--line);
+    border-radius:9px;
+    cursor:pointer;
+    outline:none;
+    appearance:none;
+    transition:border-color .2s ease;
+  }
+  select:hover{border-color:var(--amber-dim);}
+  select:focus{border-color:var(--amber);}
+  select:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+  }
+
+  button{
+    width:100%;
+    padding:14px;
+    font-family:var(--font-body);
+    font-size:14px;
+    font-weight:600;
+    letter-spacing:.02em;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    transition:transform .15s ease, filter .15s ease;
+  }
+  button:active{transform:scale(0.98);}
+
+  .btn-set{
+    background:var(--amber);
+    color:#1a1206;
+  }
+  .btn-set:hover{filter:brightness(1.08);}
+
+  .btn-clear{
+    background:transparent;
+    color:var(--red-alert);
+    border:1px solid rgba(255,90,95,0.35);
+    display:none;
+    margin-top:10px;
+  }
+  .btn-clear:hover{background:rgba(255,90,95,0.08);}
+
+  .status{
+    margin-top:16px;
+    text-align:center;
+    font-size:13px;
+    color:var(--text-muted);
+    font-family:var(--font-display);
+  }
+  .status.armed{color:var(--green-set);}
+  .status.ringing{
+    color:var(--red-alert);
+    font-weight:700;
+  }
+</style>
+</head>
+<body>
+
+  <div class="device">
+    <div class="eyebrow">
+      <span class="label">Đồng Hồ Báo Thức</span>
+      <span class="status-dot" id="statusDot"></span>
+    </div>
+
+    <div class="screen">
+      <div class="current-time" id="currentTime">00:00:00 AM</div>
+      <div class="date-line" id="currentDate">—</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-label">Đặt giờ báo thức</div>
+    <div class="inputs" id="alarmInputs">
+      <select id="hours">
+        <option value="Hour" selected hidden>Giờ</option>
+      </select>
+      <select id="minutes">
+        <option value="Minute" selected hidden>Phút</option>
+      </select>
+      <select id="ampm">
+        <option value="AM/PM" selected hidden>AM/PM</option>
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+
+    <button class="btn-set" id="setAlarmBtn">Đặt Báo Thức</button>
+    <button class="btn-clear" id="clearAlarmBtn">Tắt Báo Thức</button>
+
+    <div class="status" id="alarmStatus">Chưa đặt báo thức</div>
+  </div>
+
+  <audio id="alarmSound" loop>
+    <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
+  </audio>
+
+  <script>
+    const currentTimeEl = document.getElementById("currentTime");
+    const currentDateEl = document.getElementById("currentDate");
+    const hourSelect = document.getElementById("hours");
+    const minuteSelect = document.getElementById("minutes");
+    const ampmSelect = document.getElementById("ampm");
+    const setAlarmBtn = document.getElementById("setAlarmBtn");
+    const clearAlarmBtn = document.getElementById("clearAlarmBtn");
+    const alarmStatus = document.getElementById("alarmStatus");
+    const alarmSound = document.getElementById("alarmSound");
+    const statusDot = document.getElementById("statusDot");
+
+    let alarmTime = null;
+    let isRinging = false;
+
+    const weekdays = ["Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"];
+    const months = ["01","02","03","04","05","06","07","08","09","10","11","12"];
+
+    // Sinh danh sách Giờ (01-12) và Phút (00-59)
+    for (let i = 1; i <= 12; i++) {
+      let val = i < 10 ? "0" + i : String(i);
+      hourSelect.insertAdjacentHTML("beforeend", `<option value="${val}">${val}</option>`);
+    }
+    for (let i = 0; i <= 59; i++) {
+      let val = i < 10 ? "0" + i : String(i);
+      minuteSelect.insertAdjacentHTML("beforeend", `<option value="${val}">${val}</option>`);
+    }
+
+    function pad(n){ return n < 10 ? "0" + n : String(n); }
+
+    setInterval(() => {
+      const date = new Date();
+      let h = date.getHours();
+      const m = date.getMinutes();
+      const s = date.getSeconds();
+      let ampm = "AM";
+
+      if (h >= 12) { h -= 12; ampm = "PM"; }
+      h = h === 0 ? 12 : h;
+
+      const timeString = `${pad(h)}:${pad(m)}:${pad(s)} ${ampm}`;
+      currentTimeEl.innerText = timeString;
+      currentDateEl.innerText = `${weekdays[date.getDay()]}, ${pad(date.getDate())}/${months[date.getMonth()]}/${date.getFullYear()}`;
+
+      if (alarmTime === `${pad(h)}:${pad(m)} ${ampm}` && !isRinging) {
+        isRinging = true;
+        alarmSound.play().catch(() => {
+          console.log("Trình duyệt chặn tự động phát âm thanh. Cần tương tác trước.");
+        });
+        alarmStatus.innerText = "⏰ DẬY THÔI NÀO!!! ⏰";
+        alarmStatus.className = "status ringing";
+        currentTimeEl.classList.add("ringing");
+        statusDot.className = "status-dot ringing";
+      }
+    }, 1000);
+
+    setAlarmBtn.addEventListener("click", () => {
+      if (hourSelect.value === "Hour" || minuteSelect.value === "Minute" || ampmSelect.value === "AM/PM") {
+        alert("Vui lòng chọn đầy đủ Giờ, Phút và AM/PM để đặt báo thức!");
+        return;
+      }
+
+      alarmTime = `${hourSelect.value}:${minuteSelect.value} ${ampmSelect.value}`;
+
+      hourSelect.disabled = true;
+      minuteSelect.disabled = true;
+      ampmSelect.disabled = true;
+      setAlarmBtn.style.display = "none";
+      clearAlarmBtn.style.display = "block";
+
+      alarmStatus.innerText = `Đã hẹn giờ lúc: ${alarmTime}`;
+      alarmStatus.className = "status armed";
+      statusDot.className = "status-dot armed";
+    });
+
+    clearAlarmBtn.addEventListener("click", () => {
+      alarmTime = null;
+      isRinging = false;
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
+
+      hourSelect.disabled = false;
+      minuteSelect.disabled = false;
+      ampmSelect.disabled = false;
+      setAlarmBtn.style.display = "block";
+      clearAlarmBtn.style.display = "none";
+
+      alarmStatus.innerText = "Chưa đặt báo thức";
+      alarmStatus.className = "status";
+      currentTimeEl.classList.remove("ringing");
+      statusDot.className = "status-dot";
+
+      hourSelect.value = "Hour";
+      minuteSelect.value = "Minute";
+      ampmSelect.value = "AM/PM";
+    });
+  </script>
+</body>
+</html>
