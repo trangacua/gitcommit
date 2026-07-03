@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Báo Thức Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2c3e50, #bdc3c7);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .clock-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 350px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            font-size: 1.5rem;
+        }
+
+        .current-time {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+
+        .inputs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 30%;
+            cursor: pointer;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: #3498db;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-set {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn-set:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-clear {
+            background-color: #e74c3c;
+            color: white;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .btn-clear:hover {
+            background-color: #c0392b;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="clock-container">
+        <h2>Báo Thức Của Bạn</h2>
+        
+        <div class="current-time" id="currentTime">00:00:00 PM</div>
+
+        <div class="inputs" id="alarmInputs">
+            <select id="hours">
+                <option value="Hour" selected hidden>Giờ</option>
+            </select>
+            <select id="minutes">
+                <option value="Minute" selected hidden>Phút</option>
+            </select>
+            <select id="ampm">
+                <option value="AM/PM" selected hidden>AM/PM</option>
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+            </select>
+        </div>
+
+        <button class="btn-set" id="setAlarmBtn">Đặt Báo Thức</button>
+        <button class="btn-clear" id="clearAlarmBtn">Tắt Báo Thức</button>
+
+        <div class="status" id="alarmStatus">Chưa đặt báo thức</div>
+    </div>
+
+    <audio id="alarmSound" loop>
+        <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
+        <source src="https://www.soundjay.com/buttons/beep-06.mp3" type="audio/mp3">
+    </audio>
+
+    <script>
+        const currentTimeTime = document.getElementById("currentTime");
+        const hourSelect = document.getElementById("hours");
+        const minuteSelect = document.getElementById("minutes");
+        const ampmSelect = document.getElementById("ampm");
+        const setAlarmBtn = document.getElementById("setAlarmBtn");
+        const clearAlarmBtn = document.getElementById("clearAlarmBtn");
+        const alarmStatus = document.getElementById("alarmStatus");
+        const alarmSound = document.getElementById("alarmSound");
+
+        let alarmTime = null;
+        let isAlarmPlaying = false;
+
+        // Tự động tạo danh sách Giờ (1-12) và Phút (00-59)
+        for (let i = 12; i > 0; i--) {
+            let val = i < 10 ? "0" + i : i;
+            let option = `<option value="${val}">${val}</option>`;
+            hourSelect.firstElementChild.insertAdjacentHTML("afterend", option);
+        }
+
+        for (let i = 59; i >= 0; i--) {
+            let val = i < 10 ? "0" + i : i;
+            let option = `<option value="${val}">${val}</option>`;
+            minuteSelect.firstElementChild.insertAdjacentHTML("afterend", option);
+        }
+
+        // Cập nhật đồng hồ mỗi giây
+        setInterval(() => {
+            let date = new Date();
+            let h = date.getHours();
+            let m = date.getMinutes();
+            let s = date.getSeconds();
+            let ampm = "AM";
+
+            if (h >= 12) {
+                h = h - 12;
+                ampm = "PM";
+            }
+            h = h == 0 ? 12 : h;
+
+            h = h < 10 ? "0" + h : h;
+            m = m < 10 ? "0" + m : m;
+            s = s < 10 ? "0" + s : s;
+
+            let timeString = `${h}:${m}:${s} ${ampm}`;
+            currentTimeTime.innerText = timeString;
+
+            // Kiểm tra nếu đến giờ báo thức
+            if (alarmTime === `${h}:${m} ${ampm}` && s === "00" && !isAlarmPlaying) {
+                isAlarmPlaying = true;
+                alarmSound.play().catch(error => {
+                    console.log("Trình duyệt chặn tự động phát âm thanh. Cần tương tác trước.");
+                });
+                alarmStatus.innerText = "⏰ DẬY THÔI NÀO!!! ⏰";
+                alarmStatus.style.color = "#e74c3c";
+                clearAlarmBtn.innerText = "Dừng Chuông";
+            }
+        }, 1000);
+
+        // Xử lý nút Đặt báo thức
+        setAlarmBtn.addEventListener("click", () => {
+            // Kiểm tra xem người dùng đã chọn đủ thông tin chưa
+            if (hourSelect.value === "Hour" || minuteSelect.value === "Minute" || ampmSelect.value === "AM/PM") {
+                alert("Vui lòng chọn đầy đủ Giờ, Phút và AM/PM để đặt báo thức!");
+                return;
+            }
+
+            alarmTime = `${hourSelect.value}:${minuteSelect.value} ${ampmSelect.value}`;
+            isAlarmPlaying = false;
+            
+            // Ẩn/Hiện giao diện phù hợp
+            hourSelect.disabled = true;
+            minuteSelect.disabled = true;
+            ampmSelect.disabled = true;
+            setAlarmBtn.style.display = "none";
+            clearAlarmBtn.style.display = "block";
+            clearAlarmBtn.innerText = "Tắt Báo Thức";
+            
+            alarmStatus.innerText = `Đã hẹn giờ lúc: ${alarmTime}`;
+            alarmStatus.style.color = "#2ecc71";
+            
+        });
+
+        // Xử lý nút Tắt báo thức
+        clearAlarmBtn.addEventListener("click", () => {
+            alarmTime = null;
+            isAlarmPlaying = false;
+            alarmSound.pause();
+            alarmSound.currentTime = 0; // Reset âm thanh về đầu
+
+            hourSelect.disabled = false;
+            minuteSelect.disabled = false;
+            ampmSelect.disabled = false;
+            setAlarmBtn.style.display = "block";
+            clearAlarmBtn.style.display = "none";
+            
+            alarmStatus.innerText = "Chưa đặt báo thức";
+            alarmStatus.style.color = "#7f8c8d";
+    
+            hourSelect.value = "Hour";
+            minuteSelect.value = "Minute";
+            ampmSelect.value = "AM/PM";
+        });
+    </script>
+</body>
+</html>
