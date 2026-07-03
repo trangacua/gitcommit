@@ -1,0 +1,70 @@
+Alarm Clock — Test Suite
+20 tests
+Chạy tất cả
+Tất cả
+UI
+Logic
+Validation
+Time
+Audio
+State
+TC01
+Đồng hồ hiện tại hiển thị đúng định dạng HH:MM:SS AM/PM
+Time
+TC02
+Select "Giờ" chứa đúng 12 giá trị (01–12)
+UI
+TC03
+Select "Phút" chứa đúng 60 giá trị (00–59)
+UI
+TC04
+Select AM/PM chứa đúng 2 tùy chọn
+UI
+TC05
+Cảnh báo khi chưa chọn Giờ
+Validation
+TC06
+Cảnh báo khi chưa chọn Phút
+Validation
+TC07
+Cảnh báo khi chưa chọn AM/PM
+Validation
+TC08
+Đặt báo thức thành công với dữ liệu hợp lệ
+Logic
+TC09
+Nút Đặt báo thức ẩn sau khi đặt thành công
+State
+TC10
+Nút Tắt báo thức hiện sau khi đặt thành công
+State
+TC11
+Các select bị disabled sau khi đặt báo thức
+State
+TC12
+Status text đúng sau khi đặt báo thức
+State
+TC13
+Tắt báo thức reset alarmTime về null
+Logic
+TC14
+Các select được mở khóa sau khi tắt báo thức
+State
+TC15
+Select reset về placeholder sau khi tắt
+State
+TC16
+Status về "Chưa đặt báo thức" sau khi tắt
+State
+TC17
+Chuyển đổi giờ 12h sang 12h AM/PM đúng (trưa 12:00)
+Time
+TC18
+Chuyển đổi giờ đúng lúc nửa đêm (0:00 → 12:00 AM)
+Time
+TC19
+Khớp giờ báo thức kích hoạt chuỗi "DẬY THÔI NÀO"
+Logic
+TC20
+Giây không ảnh hưởng đến so sánh giờ báo thức
+Logic
