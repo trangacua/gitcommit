@@ -1,0 +1,21 @@
+STT	Mã Test	Tên Test Case (DisplayName)	Kỳ vọng (Expectation)	Kết quả thực tế	Trạng thái
+1	TC01	Giờ nửa đêm (0h) phải hiển thị 12:00:00 AM	Hàm formatTime(0, 0, 0) trả về "12:00:00 AM"	Trả về "12:00:00 AM"	PASSED
+2	TC02	Giờ trưa (12h) phải hiển thị 12:00:00 PM	Hàm formatTime(12, 0, 0) trả về "12:00:00 PM"	Trả về "12:00:00 PM"	PASSED
+3	TC03	13h00 phải hiển thị 01:00:00 PM	Hàm formatTime(13, 0, 0) trả về "01:00:00 PM"	Trả về "01:00:00 PM"	PASSED
+4	TC04	9h05 phải có định dạng số 0 ở đầu (09:05:07 AM)	Hàm formatTime(9, 5, 7) trả về "09:05:07 AM"	Trả về "09:05:07 AM"	PASSED
+5	TC05	23h59 phải hiển thị 11:59:59 PM	Hàm formatTime(23, 59, 59) trả về "11:59:59 PM"	Trả về "11:59:59 PM"	PASSED
+6	TC06	Đặt báo thức hợp lệ trả về true và lưu đúng giờ	setAlarm trả về true, alarmTime là "07:30 AM"	Đúng như kỳ vọng	PASSED
+7	TC07	Chưa chọn Giờ (Hour) thì không đặt được	setAlarm("Hour", "30", "AM") trả về false	Trả về false	PASSED
+8	TC08	Chưa chọn Phút (Minute) thì không đặt được	setAlarm("07", "Minute", "AM") trả về false	Trả về false	PASSED
+9	TC09	Chưa chọn AM/PM thì không đặt được	setAlarm("07", "30", "AM/PM") trả về false	Trả về false	PASSED
+10	TC10	Sau khi đặt, isAlarmPlaying phải là false	isAlarmPlaying() trả về false sau khi đặt	Trả về false	PASSED
+11	TC11	Sau khi tắt, alarmTime phải là null	getAlarmTime() trả về null sau khi clearAlarm()	Trả về null	PASSED
+12	TC12	Sau khi tắt, isAlarmPlaying phải là false	isAlarmPlaying() trả về false sau khi clearAlarm()	Trả về false	PASSED
+13	TC13	Đúng giờ và giây = 0 thì chuông reo	shouldRing(7, 30, 0) trả về true	Trả về true	PASSED
+14	TC14	Đúng giờ nhưng giây khác 0 thì không reo	shouldRing(7, 30, 5) trả về false	Trả về false	PASSED
+15	TC15	Sai giờ thì không reo	shouldRing(8, 30, 0) trả về false	Trả về false	PASSED
+16	TC16	Chưa đặt báo thức thì không reo	shouldRing(7, 30, 0) khi chưa set trả về false	Trả về false	PASSED
+17	TC17	Đang reo rồi thì không reo lại (chống lặp)	shouldRing trả về false nếu isAlarmPlaying đang true	Trả về false	PASSED
+18	TC18	Báo thức PM đúng giờ chiều thì reo	Báo thức "03:00 PM" khớp với hệ thống 15:00:00	Trả về true	PASSED
+19	TC19	Báo thức 12 AM (nửa đêm) hoạt động đúng	Báo thức "12:00 AM" khớp với hệ thống 00:00:00	Trả về true	PASSED
+20	TC20	Báo thức 12 PM (trưa) hoạt động đúng	Báo thức "12:00 PM" khớp với hệ thống 12:00:00	Trả về true	PASSED
