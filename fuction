@@ -7,6 +7,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class AlarmClockApp extends JFrame {
+<<<<<<< Updated upstream
+=======
+    // Khai báo các thành phần giao diện (tương đương DOM trong JS)
+>>>>>>> Stashed changes
     private JLabel currentTimeLabel;
     private JComboBox<String> hourSelect;
     private JComboBox<String> minuteSelect;
@@ -14,10 +18,19 @@ public class AlarmClockApp extends JFrame {
     private JButton setAlarmBtn;
     private JButton clearAlarmBtn;
     private JLabel alarmStatus;
+<<<<<<< Updated upstream
+=======
+
+    // Các biến logic
+>>>>>>> Stashed changes
     private String alarmTime = null;
     private boolean isAlarmPlaying = false;
 
     public AlarmClockApp() {
+<<<<<<< Updated upstream
+=======
+        // Thiết lập giao diện chính (Window)
+>>>>>>> Stashed changes
         setTitle("Ứng dụng Báo Thức");
         setSize(400, 250);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
