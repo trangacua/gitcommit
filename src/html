@@ -1,0 +1,14 @@
+.html — HyperText Markup Language
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trang Web Đầu Tiên</title>
+</head>
+<body>
+    <h1>Chào mừng bạn đến với thế giới Web!</h1>
+    <p>Đây là một đoạn văn bản ngắn được tạo bằng HTML.</p>
+    <a href="https://www.google.com">Bấm vào đây để vào Google</a>
+</body>
+</html>)
+
+
