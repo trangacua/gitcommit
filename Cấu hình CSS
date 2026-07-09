@@ -1,7 +1,4 @@
-selector {
-    property: value; 
-    property: value;
-}
+
    1. RESET STYLES & CẤU HÌNH CHUNG
    ========================================== */
 * {
