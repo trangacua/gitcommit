@@ -1,8 +1,0 @@
-body {
-    background: linear-gradient(135deg, #2c3e50, #bdc3c7); /* Màu nền chuyển sắc từ xanh đen sang xám */
-    height: 100vh; /* Chiều cao phủ kín màn hình */
-    display: flex; /* Kích hoạt chế độ Flexbox */
-    justify-content: center; /* Căn giữa theo chiều ngang */
-    align-items: center; /* Căn giữa theo chiều dọc */
-    margin: 0;
-}
