@@ -108,7 +108,7 @@
 
     <div class="clock-container">
         <h2>Báo Thức Của Bạn</h2>
-        
+
         <div class="current-time" id="currentTime">00:00:00 PM</div>
 
         <div class="inputs" id="alarmInputs">
@@ -118,7 +118,7 @@
             <select id="minutes">
                 <option value="Minute" selected hidden>Phút</option>
             </select>
-            <select id="ampm">
+<select id="ampm">
                 <option value="AM/PM" selected hidden>AM/PM</option>
                 <option value="AM">AM</option>
                 <option value="PM">PM</option>
@@ -131,22 +131,47 @@
         <div class="status" id="alarmStatus">Chưa đặt báo thức</div>
     </div>
 
-    <audio id="alarmSound" loop>
-        <source src="https://www.soundjay.com/buttons/beep-06.mp3" type="audio/mp3">
-    </audio>
-
     <script>
-        const currentTimeTime = document.getElementById("currentTime");
+        const currentTimeElement = document.getElementById("currentTime");
         const hourSelect = document.getElementById("hours");
         const minuteSelect = document.getElementById("minutes");
         const ampmSelect = document.getElementById("ampm");
         const setAlarmBtn = document.getElementById("setAlarmBtn");
         const clearAlarmBtn = document.getElementById("clearAlarmBtn");
         const alarmStatus = document.getElementById("alarmStatus");
-        const alarmSound = document.getElementById("alarmSound");
 
         let alarmTime = null;
         let isAlarmPlaying = false;
+
+        // ----- Chuông báo bằng Web Audio API (không cần link mp3 ngoài) -----
+        let audioCtx = null;
+        let beepInterval = null;
+
+        function playBeep() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.type = "sine";
+            oscillator.frequency.value = 880;
+            gainNode.gain.value = 0.3;
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function startAlarmSound() {
+            playBeep();
+            beepInterval = setInterval(playBeep, 600);
+        }
+
+        function stopAlarmSound() {
+            if (beepInterval) {
+                clearInterval(beepInterval);
+                beepInterval = null;
+            }
+        }
+        // ----------------------------------------------------------------
 
         // Tự động tạo danh sách Giờ (1-12) và Phút (00-59)
         for (let i = 12; i > 0; i--) {
@@ -158,7 +183,7 @@
         for (let i = 59; i >= 0; i--) {
             let val = i < 10 ? "0" + i : i;
             let option = `<option value="${val}">${val}</option>`;
-           minuteSelect.insertAdjacentHTML("beforeend", option);
+            minuteSelect.insertAdjacentHTML("beforeend", option);
         }
 
         // Cập nhật đồng hồ mỗi giây
@@ -171,7 +196,7 @@
 
             if (h >= 12) {
                 h = h - 12;
-                ampm = "PM";
+ampm = "PM";
             }
             h = h == 0 ? 12 : h;
 
@@ -185,9 +210,7 @@
             // Kiểm tra nếu đến giờ báo thức
             if (alarmTime === `${h}:${m} ${ampm}` && s === "00" && !isAlarmPlaying) {
                 isAlarmPlaying = true;
-                alarmSound.play().catch(error => {
-                    console.log("Trình duyệt chặn tự động phát âm thanh. Cần tương tác trước.");
-                });
+                startAlarmSound();
                 alarmStatus.innerText = "⏰ DẬY THÔI NÀO!!! ⏰";
                 alarmStatus.style.color = "#e74c3c";
                 clearAlarmBtn.innerText = "Dừng Chuông";
@@ -204,7 +227,7 @@
 
             alarmTime = `${hourSelect.value}:${minuteSelect.value} ${ampmSelect.value}`;
             isAlarmPlaying = false;
-            
+
             // Ẩn/Hiện giao diện phù hợp
             hourSelect.disabled = true;
             minuteSelect.disabled = true;
@@ -212,28 +235,26 @@
             setAlarmBtn.style.display = "none";
             clearAlarmBtn.style.display = "block";
             clearAlarmBtn.innerText = "Tắt Báo Thức";
-            
+
             alarmStatus.innerText = `Đã hẹn giờ lúc: ${alarmTime}`;
             alarmStatus.style.color = "#2ecc71";
-            
         });
 
         // Xử lý nút Tắt báo thức
         clearAlarmBtn.addEventListener("click", () => {
             alarmTime = null;
             isAlarmPlaying = false;
-            alarmSound.pause();
-            alarmSound.currentTime = 0; // Reset âm thanh về đầu
+            stopAlarmSound();
 
             hourSelect.disabled = false;
             minuteSelect.disabled = false;
             ampmSelect.disabled = false;
             setAlarmBtn.style.display = "block";
             clearAlarmBtn.style.display = "none";
-            
+
             alarmStatus.innerText = "Chưa đặt báo thức";
             alarmStatus.style.color = "#7f8c8d";
-    
+
             hourSelect.value = "Hour";
             minuteSelect.value = "Minute";
             ampmSelect.value = "AM/PM";
